@@ -1,25 +1,20 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const employeeRoutes = require("./routes/employeeRoutes");
+const middleware = require("./middleware");
 
 const app = express();
 const PORT = 3000;
 
-app.use(bodyParser.json());
+app.use(middleware.jsonParser);
 
-
-app.get("/favicon.ico", (req, res) => res.status(204));
+app.get("/favicon.ico", middleware.faviconHandler);
 
 app.use(employeeRoutes);
 
-app.use((req, res) => {
-  res.status(404).json({ message: "Endpoint not found" });
-});
+app.use(middleware.notFoundHandler);
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: "Something went wrong" });
-});
+app.use(middleware.errorHandler);
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
